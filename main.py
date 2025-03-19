@@ -1,6 +1,7 @@
 import tkinter as tk
 from tkinter import messagebox
 import random
+import pyttsx3
 
 class SpellingGame:
     def __init__(self, root):
@@ -15,6 +16,9 @@ class SpellingGame:
         self.modified_words = []  # List or words with hidden letters
         self.current_word_index = 0  # Tracking number of words entered
         self.score = 0  # User score
+
+        #Text-to-speech for saying word
+        self.engine = pyttsx3.init()
 
         #Start
         self.create_start_ui()
@@ -32,14 +36,10 @@ class SpellingGame:
     # UI for entering words after start_ui
     def create_word_input_ui(self):
         self.clear_ui()
-        # Label and entry for word input
         self.label = tk.Label(self.root, text="Enter a word:", font=("", 20))
         self.label.pack()
-
         self.entry = tk.Entry(self.root, font=("", 20))
         self.entry.pack()
-
-        # Button to submit the word
         self.start_button = tk.Button(self.root, text="Next", command=self.get_words, font=("", 20))
         self.start_button.pack()
 
@@ -47,15 +47,16 @@ class SpellingGame:
     def create_guessing_ui(self):
         self.clear_ui()
 
-        modified_word = self.modified_words[self.current_word_index]
         self.label = tk.Label(self.root, font=("", 20))
         self.label.pack()
-
         self.entry = tk.Entry(self.root, font=("", 20))
         self.entry.pack()
-
-        self.start_button = tk.Button(self.root, text="Enter", command=self.check_guess, font=("", 20))
-        self.start_button.pack()
+        button_frame = tk.Frame(self.root)
+        button_frame.pack()
+        self.start_button = tk.Button(button_frame, text="Enter", command=self.check_guess, font=("", 20))
+        self.start_button.pack(side=tk.LEFT, padx=10)
+        self.spelling_button = tk.Button(button_frame, text="Word", command=self.spell_word, font=("", 20))
+        self.spelling_button.pack(side=tk.LEFT, padx=10)
 
     # UI for displaying results
     def create_results_ui(self):
@@ -68,11 +69,8 @@ class SpellingGame:
         self.label = tk.Label(self.root, text=result_text)
         self.label.pack()
 
-        # Button to retry with the same words
         self.retry_button = tk.Button(self.root, text="Retry", command=self.reset_for_retry)
         self.retry_button.pack()
-
-        # Button to start with new words
         self.new_words_button = tk.Button(self.root, text="New Words", command=self.create_start_ui)
         self.new_words_button.pack()
 
@@ -158,6 +156,16 @@ class SpellingGame:
         self.current_word_index = 0
         self.score = 0
         self.prepare_guessing_phase()
+
+    # Text to speach
+    def ttspeach(self, word):
+        self.engine.say(word)
+        self.engine.runAndWait()
+
+    def spell_word(self):
+        if self.current_word_index < len(self.words_list):
+            self.ttspeach(f"Spell the word: {self.words_list[self.current_word_index]}")
+
 
 
 # Run the application
