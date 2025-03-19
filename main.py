@@ -65,14 +65,15 @@ class SpellingGame:
         #Display score and correct answers
         result_text = f"Game Over\nYour score: {self.score}/{self.num_words}\n\n"
         for i, word in enumerate(self.words_list):
-            result_text += f"Word {i+1}: {self.modified_words[i]} -> {word}\n"
-        self.label = tk.Label(self.root, text=result_text)
+            result_text += f"Word {i+1}: {self.modified_words[i]} --> {word}\n"
+        self.label = tk.Label(self.root, text=result_text, font=("", 20))
         self.label.pack()
-
-        self.retry_button = tk.Button(self.root, text="Retry", command=self.reset_for_retry)
-        self.retry_button.pack()
-        self.new_words_button = tk.Button(self.root, text="New Words", command=self.create_start_ui)
-        self.new_words_button.pack()
+        button_frame = tk.Frame(self.root)
+        button_frame.pack()
+        self.retry_button = tk.Button(button_frame, text="Retry", command=self.reset_for_retry, font=("", 20))
+        self.retry_button.pack(side=tk.LEFT, padx=10)
+        self.new_words_button = tk.Button(button_frame, text="New Words", command=self.create_start_ui, font=("", 20))
+        self.new_words_button.pack(side=tk.LEFT, padx=10)
 
     # Clear UI elements
     def clear_ui(self):
@@ -85,6 +86,13 @@ class SpellingGame:
             self.num_words = int(self.entry.get())
             if self.num_words <= 0:
                 raise ValueError("Enter a positive number please.")
+
+            # Clear list if new words
+            self.words_list.clear()
+            self.modified_words.clear()
+            self.current_word_index = 0
+            self.score = 0
+
             self.create_word_input_ui()
         except ValueError:
             messagebox.showerror("Error", "Please enter a valid positive number.")
