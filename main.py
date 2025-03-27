@@ -16,6 +16,7 @@ class SpellingGame:
         self.modified_words = []  # List or words with hidden letters
         self.current_word_index = 0  # Tracking number of words entered
         self.score = 0  # User score
+        self.mistakes = [] # List to store wrong words
 
         #Text-to-speech for saying word
         self.engine = pyttsx3.init()
@@ -63,11 +64,19 @@ class SpellingGame:
         self.clear_ui()
 
         #Display score and correct answers
-        result_text = f"Game Over\nYour score: {self.score}/{self.num_words}\n\n"
+        result_text = f"Your score: {self.score}/{self.num_words}\n\n"
         for i, word in enumerate(self.words_list):
             result_text += f"Word {i+1}: {self.modified_words[i]} --> {word}\n"
         self.label = tk.Label(self.root, text=result_text, font=("", 20))
         self.label.pack()
+
+        # Display wrong words. Totally forgor 💀
+        mistakes_lbl = "Mistakes:\n"
+        for i, (user_guess, correct_word) in enumerate(self.mistakes):
+            mistakes_lbl += f"Mistake {i + 1}: {user_guess} --> {correct_word}\n"
+
+        self.wrong_words = tk.Label(self.root, text=mistakes_lbl, font=("", 20))
+        self.wrong_words.pack()
         button_frame = tk.Frame(self.root)
         button_frame.pack()
         self.retry_button = tk.Button(button_frame, text="Retry", command=self.reset_for_retry, font=("", 20))
@@ -155,6 +164,8 @@ class SpellingGame:
 
         if user_guess == correct_word:
             self.score += 1
+        else:
+            self.mistakes.append([user_guess, correct_word])
 
         self.current_word_index += 1
         self.show_next_word()
